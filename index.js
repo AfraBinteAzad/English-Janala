@@ -86,7 +86,7 @@ const displayWord = (words) =>{
       <p class="font-bold text-xl text-gray-700 .font-bangla">${word.meaning ? word.meaning: "কোনো অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation:"কোনো উচ্চারণ পাওয়া যায়নি"}</p>
       <div class="flex justify-between items-center w-full">
       <button id="btn" onclick="loadworddetail(${word.id})" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-circle-info"></i></button>
-      <button id="btn" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-volume-high"></i></button>
+      <button id="btn" onclick="pronounceWord('${word.word}')" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-volume-high"></i></button>
       </div>
      </div>
         `;
@@ -94,6 +94,13 @@ const displayWord = (words) =>{
     });
     managespinner(false)
 
+}
+
+
+function pronounceWord(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-EN"; // English
+  window.speechSynthesis.speak(utterance);
 }
 
 const displayLessons = (lessons) => {
@@ -112,3 +119,28 @@ const displayLessons = (lessons) => {
 };
 
 LoadLessons();
+
+
+document.getElementById("btn-search").addEventListener("click",()=>{
+  const input =document.getElementById("input-search");
+  const value=input.value.trim().toLowerCase();
+  console.log(value)
+  fetch("https://openapi.programming-hero.com/api/words/all")
+  .then(res=>res.json())
+  .then(data=>{
+    const allword=data.data;
+    console.log(allword)
+    const filter=allword.filter(word=>word.word.toLowerCase().includes(value));
+   displayWord(filter);
+  })
+})
+
+
+ document.querySelectorAll(".faq-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const answer = btn.querySelector(".answer");
+        const icon = btn.querySelector(".icon");
+        answer.classList.toggle("hidden");
+        icon.textContent = icon.textContent === "+" ? "-" : "+";
+      });
+    });
