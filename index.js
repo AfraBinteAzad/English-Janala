@@ -7,6 +7,7 @@ const LoadLessons = () => {
 
 
 const LoadLevelWord = (id) => {
+  managespinner(true)
   const url = `https://openapi.programming-hero.com/api/level/${id}`;
   fetch(url)
     .then(res => res.json())
@@ -21,7 +22,41 @@ const LoadLevelWord = (id) => {
     });
 };
 
+const loadworddetail=async(id)=>{
+  const url=`https://openapi.programming-hero.com/api/word/${id}`;
+  const res=await fetch(url);
+  const detail=await res.json();
+  displaymodal(detail.data);
+}
 
+const managespinner=(status)=>{
+   if(status==true){
+    document.getElementById("spinner").classList.remove("hidden");
+    document.getElementById("word-container").classList.add("hidden");
+   }
+   else{
+    document.getElementById("spinner").classList.add("hidden");
+    document.getElementById("word-container").classList.remove("hidden");
+   }
+}
+const displaymodal=(word)=>{
+     console.log(word)
+     const modal=document.getElementById("modal-container")
+     modal.innerHTML=`
+     <p class="font-bold text-2xl mb-3">${word.word} (<i class="fa-solid fa-microphone-lines"></i> : ${word.pronunciation})</p>
+      <p class=" font-semibold mb-1.5">Meaning</p>
+      <p class=".font-bangla font-semibold mb-3">${word.meaning}</p>
+      <p class="font-semibold mb-1.5">Example</p>
+      <p class="text-gray-400 mb-3">${word.sentence}</p>
+      <p class=" font-semibold mb-2">সমার্থক শব্দ গুলো</p>
+      <div class="flex gap-2.5">
+      <button class="btn btn-soft btn-primary">${word.synonyms[0]}</button>
+      <button class="btn btn-soft btn-primary">${word.synonyms[1]}</button>
+      <button class="btn btn-soft btn-primary">${word.synonyms[2]}</button>
+      `;
+     document.getElementById("my_modal_5").showModal();
+
+}
 
 const displayWord = (words) =>{
     const levelword=document.getElementById("word-container");
@@ -38,8 +73,8 @@ const displayWord = (words) =>{
      <p class="text-3xl font-bold">নেক্সট Lesson এ যান</p>
    `;
       levelword.append(card);
-
-        return
+      managespinner(false)
+      return
     }
     words.forEach(word=>{
         console.log(word)
@@ -50,13 +85,14 @@ const displayWord = (words) =>{
       <p class="font-semibold">Meaning /Pronounciation</p>
       <p class="font-bold text-xl text-gray-700 .font-bangla">${word.meaning ? word.meaning: "কোনো অর্থ পাওয়া যায়নি"} / ${word.pronunciation ? word.pronunciation:"কোনো উচ্চারণ পাওয়া যায়নি"}</p>
       <div class="flex justify-between items-center w-full">
-      <button id="btn" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-circle-info"></i></button>
-      <button id="btn"class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-volume-high"></i></button>
+      <button id="btn" onclick="loadworddetail(${word.id})" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-circle-info"></i></button>
+      <button id="btn" class="btn btn-soft btn-primary rounded-xl"><i class="fa-solid fa-volume-high"></i></button>
       </div>
      </div>
         `;
         levelword.append(card)
-    })
+    });
+    managespinner(false)
 
 }
 
